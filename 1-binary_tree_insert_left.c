@@ -10,7 +10,6 @@
  *
  * Return: a pointer to the created node, or NULL on failure or
  * if parent is NULL.
- *
  */
 binary_tree_t *binary_tree_insert_left(binary_tree_t *parent, int value)
 {
@@ -28,6 +27,7 @@ binary_tree_t *binary_tree_insert_left(binary_tree_t *parent, int value)
 
 	new_node->n = value;
 	new_node->parent = temp_parent;
+	new_node->right = NULL;
 
 	if (temp_parent->left)
 	{
