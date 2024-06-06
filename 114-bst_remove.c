@@ -14,6 +14,69 @@ bst_t *bst_minimum(bst_t *node)
 }
 
 /**
+ * transplant - Replaces one subtree as a child of its
+ * parent with another subtree.
+ * @root: Pointer to the root node of the tree.
+ * @u: Pointer to the node to replace.
+ * @v: Pointer to the replacement node.
+ *
+ * Return: Pointer to the new root node.
+ */
+bst_t *transplant(bst_t *root, bst_t *u, bst_t *v)
+{
+	if (u->parent == NULL)
+		root = v;
+	else if (u == u->parent->left)
+		u->parent->left = v;
+	else
+		u->parent->right = v;
+
+	if (v != NULL)
+		v->parent = u->parent;
+
+	return (root);
+}
+
+/**
+ * bst_remove_node - Removes a node from a BST.
+ * @root: Pointer to the root node of the tree.
+ * @node: Pointer to the node to remove.
+ *
+ * Return: Pointer to the new root node.
+ */
+bst_t *bst_remove_node(bst_t *root, bst_t *node)
+{
+	bst_t *temp;
+
+	if (node->left == NULL)
+	{
+		root = transplant(root, node, node->right);
+		free(node);
+	}
+	else if (node->right == NULL)
+	{
+		root = transplant(root, node, node->left);
+		free(node);
+	}
+	else
+	{
+		temp = bst_minimum(node->right);
+		if (temp->parent != node)
+		{
+			root = transplant(root, temp, temp->right);
+			temp->right = node->right;
+			temp->right->parent = temp;
+		}
+		root = transplant(root, node, temp);
+		temp->left = node->left;
+		temp->left->parent = temp;
+		free(node);
+	}
+
+	return (root);
+}
+
+/**
  * bst_remove - Removes a node with a specific value from a BST.
  * @root: Pointer to the root node of the BST.
  * @value: The value to remove from the BST.
@@ -22,54 +85,16 @@ bst_t *bst_minimum(bst_t *node)
  */
 bst_t *bst_remove(bst_t *root, int value)
 {
-	bst_t *temp;
+	bst_t *node = root;
 
-	if (root == NULL)
-		return (NULL);
-
-	/* Find the node to be removed */
-	if (value < root->n)
-		root->left = bst_remove(root->left, value);
-	else if (value > root->n)
-		root->right = bst_remove(root->right, value);
-	else
+	while (node != NULL)
 	{
-		/* Node with only one child or no child */
-		if (root->left == NULL)
-		{
-			temp = root->right;
-			if (root->parent)
-			{
-				if (root->parent->left == root)
-					root->parent->left = temp;
-				else
-					root->parent->right = temp;
-			}
-			if (temp)
-				temp->parent = root->parent;
-			free(root);
-			return (temp);
-		}
-		else if (root->right == NULL)
-		{
-			temp = root->left;
-			if (root->parent)
-			{
-				if (root->parent->left == root)
-					root->parent->left = temp;
-				else
-					root->parent->right = temp;
-			}
-			if (temp)
-				temp->parent = root->parent;
-			free(root);
-			return (temp);
-		}
-
-		/* Node with two children: Get the inorder successor (min value in right subtree) */
-		temp = bst_minimum(root->right);
-		root->n = temp->n;
-		root->right = bst_remove(root->right, temp->n);
+		if (value < node->n)
+			node = node->left;
+		else if (value > node->n)
+			node = node->right;
+		else
+			return (bst_remove_node(root, node));
 	}
 
 	return (root);
