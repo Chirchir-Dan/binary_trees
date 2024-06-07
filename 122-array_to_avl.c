@@ -13,9 +13,9 @@ avl_t *array_to_avl(int *array, size_t size)
 {
 	avl_t *root;
 	avl_t *temp;
+	size_t i;
 
 	root = NULL;
-	size_t i;
 
 	if (array == NULL || size == 0)
 		return (NULL);
