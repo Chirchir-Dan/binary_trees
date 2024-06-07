@@ -49,7 +49,7 @@ int get_balance(const binary_tree_t *node)
 */
 avl_t *avl_insert_node(avl_t *node, int value, avl_t **new_node_ref)
 {
-	int balance = get_balance(node);
+	int balance;
 
 	if (node == NULL)
 	{
@@ -73,6 +73,7 @@ avl_t *avl_insert_node(avl_t *node, int value, avl_t **new_node_ref)
 		return (node);
 	}
 
+	balance = get_balance(node);
 	if (balance > 1 && value < node->left->n)
 		return (binary_tree_rotate_right(node));
 	if (balance < -1 && value > node->right->n)
