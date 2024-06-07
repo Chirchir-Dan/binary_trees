@@ -1,5 +1,6 @@
 #include "binary_trees.h"
 #include <stdlib.h>
+
 /**
  * max - Finds maximum of two integers.
  * @a: First integer.
@@ -48,6 +49,8 @@ int get_balance(const binary_tree_t *node)
 */
 avl_t *avl_insert_node(avl_t *node, int value, avl_t **new_node_ref)
 {
+	int balance = get_balance(node);
+
 	if (node == NULL)
 	{
 		*new_node_ref = binary_tree_node(NULL, value);
@@ -69,7 +72,6 @@ avl_t *avl_insert_node(avl_t *node, int value, avl_t **new_node_ref)
 	{
 		return (node);
 	}
-	int balance = get_balance(node);
 
 	if (balance > 1 && value < node->left->n)
 		return (binary_tree_rotate_right(node));
