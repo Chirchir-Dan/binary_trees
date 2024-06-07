@@ -15,15 +15,14 @@ avl_t *find_min(avl_t *node)
 }
 
 /**
-* remove_and_replace_node - Removes a node and replaces it with its child or
-* successor.
+* remove_node - Removes a node with specified value.
 * @root: Pointer to the root node of the tree.
 * @value: Value to remove from the tree.
-* @removed: Pointer to a flag indicating if the node was removed.
+* @removed: Pointer to flag indicating if the node was removed.
 *
 * Return: Pointer to the new root node of the tree after removal.
 */
-avl_t *remove_and_replace_node(avl_t *root, int value, int *removed)
+avl_t *remove_node(avl_t *root, int value, int *removed)
 {
 	avl_t *temp;
 
@@ -31,9 +30,9 @@ avl_t *remove_and_replace_node(avl_t *root, int value, int *removed)
 		return (NULL);
 
 	if (value < root->n)
-		root->left = remove_and_replace_node(root->left, value, removed);
+		root->left = remove_node(root->left, value, removed);
 	else if (value > root->n)
-		root->right = remove_and_replace_node(root->right, value, removed);
+		root->right = remove_node(root->right, value, removed);
 	else
 	{
 		*removed = 1;
@@ -53,7 +52,7 @@ avl_t *remove_and_replace_node(avl_t *root, int value, int *removed)
 		{
 			temp = find_min(root->right);
 			root->n = temp->n;
-			root->right = remove_and_replace_node(root->right, temp->n, removed);
+			root->right = remove_node(root->right, temp->n, removed);
 		}
 	}
 	return (root);
@@ -92,24 +91,6 @@ avl_t *balance_tree(avl_t *root)
 }
 
 /**
-* avl_remove_node - Removes a node from the AVL tree and balances the tree
-* @root: Pointer to the root node of the tree.
-* @value: Value to remove from the tree.
-*
-* Return: Pointer to the new root node of the tree after removal.
-*/
-avl_t *avl_remove_node(avl_t *root, int value)
-{
-	int removed;
-
-	removed = 0;
-	root = remove_and_replace_node(root, value, &removed);
-	if (root == NULL || !removed)
-		return (root);
-	return (balance_tree(root));
-}
-
-/**
 * avl_remove - Removes a value from an AVL tree.
 * @root: Pointer to the root node of the tree for removing a node.
 * @value: Value to remove from the tree.
@@ -118,5 +99,14 @@ avl_t *avl_remove_node(avl_t *root, int value)
 */
 avl_t *avl_remove(avl_t *root, int value)
 {
-	return (avl_remove_node(root, value));
+	int removed;
+
+	removed = 0;
+	root = remove_node(root, value, &removed);
+	if (root == NULL)
+		return (NULL);
+	if (removed)
+		root = balance_tree(root);
+
+	return (root);
 }
