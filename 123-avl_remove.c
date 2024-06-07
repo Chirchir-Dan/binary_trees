@@ -15,15 +15,15 @@ avl_t *find_min(avl_t *node)
 }
 
 /**
-* remove_node_and_balance - Removes the node with the specified value and
-* balances the tree.
+* remove_and_replace_node - Removes a node and replaces it with its child or
+* successor.
 * @root: Pointer to the root node of the tree.
 * @value: Value to remove from the tree.
-* @removed: Value to remove from the tree.
+* @removed: Pointer to a flag indicating if the node was removed.
 *
 * Return: Pointer to the new root node of the tree after removal.
 */
-avl_t *remove_node_and_balance(avl_t *root, int value, int *removed)
+avl_t *remove_and_replace_node(avl_t *root, int value, int *removed)
 {
 	avl_t *temp;
 
@@ -31,11 +31,12 @@ avl_t *remove_node_and_balance(avl_t *root, int value, int *removed)
 		return (NULL);
 
 	if (value < root->n)
-		root->left = remove_node_and_balance(root->left, value, removed);
+		root->left = remove_and_replace_node(root->left, value, removed);
 	else if (value > root->n)
-		root->right = remove_node_and_balance(root->right, value, removed);
+		root->right = remove_and_replace_node(root->right, value, removed);
 	else
 	{
+		*removed = 1;
 		if (root->left == NULL || root->right == NULL)
 		{
 			temp = root->left ? root->left : root->right;
@@ -52,13 +53,9 @@ avl_t *remove_node_and_balance(avl_t *root, int value, int *removed)
 		{
 			temp = find_min(root->right);
 			root->n = temp->n;
-			root->right = remove_node_and_balance(root->right, temp->n, removed);
+			root->right = remove_and_replace_node(root->right, temp->n, removed);
 		}
-		*removed = 1;
 	}
-	if (root == NULL)
-		return (root);
-
 	return (root);
 }
 
@@ -106,7 +103,7 @@ avl_t *avl_remove_node(avl_t *root, int value)
 	int removed;
 
 	removed = 0;
-	root = remove_node_and_balance(root, value, &removed);
+	root = remove_and_replace_node(root, value, &removed);
 	if (root == NULL || !removed)
 		return (root);
 	return (balance_tree(root));
