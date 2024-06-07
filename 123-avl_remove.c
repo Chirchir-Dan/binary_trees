@@ -91,6 +91,24 @@ avl_t *balance_tree(avl_t *root)
 }
 
 /**
+* avl_remove_node - Removes a node from the AVL tree and balances the tree.
+* @root: Pointer to the root node of the tree.
+* @value: Value to remove from the tree.
+*
+* Return: Pointer to the new root node of the tree after removal.
+*/
+avl_t *avl_remove_node(avl_t *root, int value)
+{
+	int removed;
+
+	removed = 0;
+	root = remove_node(root, value, &removed);
+	if (root == NULL || !removed)
+		return (root);
+	return (balance_tree(root));
+}
+
+/**
 * avl_remove - Removes a value from an AVL tree.
 * @root: Pointer to the root node of the tree for removing a node.
 * @value: Value to remove from the tree.
@@ -99,14 +117,5 @@ avl_t *balance_tree(avl_t *root)
 */
 avl_t *avl_remove(avl_t *root, int value)
 {
-	int removed;
-
-	removed = 0;
-	root = remove_node(root, value, &removed);
-	if (root == NULL)
-		return (NULL);
-	if (removed)
-		root = balance_tree(root);
-
-	return (root);
+	return (avl_remove_node(root, value));
 }
